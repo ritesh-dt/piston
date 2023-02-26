@@ -1,2 +1,2 @@
-FROM ghcr.io/engineer-man/piston:latest
+FROM ghcr.io/ritesh-dt/piston:latest
 ADD . /piston/packages/
