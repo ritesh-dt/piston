@@ -294,10 +294,14 @@ router.post('/execute/multiple', async (req, res) => {
         // const result = await job.execute_multiple();
 
         // await job.cleanup();
-        let result = [];
+        let result = {
+            "stdin": job.stdin
+        };
         
         return res.status(200).send(result);
     } catch (error) {
+        console.log(error);
+        
         return res.status(400).json(error);
     }
 });
