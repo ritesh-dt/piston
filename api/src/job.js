@@ -240,7 +240,6 @@ class Job {
             this.files.filter(file => file.encoding == 'utf8');
 
         this.logger.debug('Compiling');
-        this.logger.debug('Gonna add some features here');
 
         let compile;
 
@@ -445,6 +444,59 @@ class Job {
         await this.cleanup_filesystem();
 
         remaining_job_spaces++;
+    }
+    
+    async execute_multiple() {
+        if (this.state !== job_states.PRIMED) {
+            throw new Error(
+                'Job must be in primed state, current state: ' +
+                    this.state.toString()
+            );
+        }
+
+        this.logger.info(`Executing job runtime=${this.runtime.toString()}`);
+
+        const code_files =
+            (this.runtime.language === 'file' && this.files) ||
+            this.files.filter(file => file.encoding == 'utf8');
+
+        this.logger.debug('Compiling');
+        this.logger.debug('Gonna add some features here');
+
+        let compile;
+        
+        if (this.runtime.compiled) {
+            compile = await this.safe_call(
+                path.join(this.runtime.pkgdir, 'compile'),
+                code_files.map(x => x.name),
+                this.timeouts.compile,
+                this.memory_limits.compile
+            );
+        }
+
+        this.logger.debug('Running');
+        
+        let run = [];
+        
+        for (let stdin of this.stdin) {
+            const run_output = await this.safe_call(
+                path.join(this.runtime.pkgdir, 'run'),
+                [code_files[0].name, ...this.args],
+                this.timeouts.run,
+                this.memory_limits.run
+            );
+            
+            run.push(run_output);
+        }
+
+        this.state = job_states.EXECUTED;
+
+        return {
+            compile,
+            run,
+            language: this.runtime.language,
+            version: this.runtime.version.raw,
+        };
     }
 }
 

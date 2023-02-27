@@ -143,7 +143,7 @@ function get_job(body) {
             new Job({
                 runtime: rt,
                 args: args || [],
-                stdin: stdin || '',
+                stdin: stdin || [],
                 files,
                 timeouts: {
                     run: run_timeout,
@@ -276,6 +276,22 @@ router.post('/execute', async (req, res) => {
         await job.prime();
 
         const result = await job.execute();
+
+        await job.cleanup();
+
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+});
+
+router.post('/execute/multiple', async (req, res) => {
+    try {
+        const job = await get_job(req.body);
+
+        await job.prime();
+
+        const result = await job.execute_multiple();
 
         await job.cleanup();
 
