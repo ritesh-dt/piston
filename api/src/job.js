@@ -463,21 +463,27 @@ class Job {
         this.logger.debug('Compiling');
         this.logger.debug('Gonna add some features here');
 
-        let compile;
+        let all_stdin = this.stdin;
+        
+        let compile = [];
         
         if (this.runtime.compiled) {
-            compile = await this.safe_call(
-                path.join(this.runtime.pkgdir, 'compile'),
-                code_files.map(x => x.name),
-                this.timeouts.compile,
-                this.memory_limits.compile
-            );
+            for (let stdin of all_stdin) {
+                this.stdin = stdin;
+                
+                const compile_output = await this.safe_call(
+                    path.join(this.runtime.pkgdir, 'compile'),
+                    code_files.map(x => x.name),
+                    this.timeouts.compile,
+                    this.memory_limits.compile
+                );
+                compile.push(compile_output);
+            }
         }
 
         this.logger.debug('Running');
         
         let run = [];
-        let all_stdin = this.stdin;
         
         for (let stdin of all_stdin) {
             this.stdin = stdin;
@@ -488,7 +494,6 @@ class Job {
                 this.timeouts.run,
                 this.memory_limits.run
             );
-            
             run.push(run_output);
         }
 
