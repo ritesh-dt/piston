@@ -289,7 +289,7 @@ router.post('/execute/multiple', async (req, res) => {
     try {
         const job = await get_job(req.body);
 
-        // await job.prime();
+        await job.prime();
 
         // const result = await job.execute_multiple();
 
