@@ -289,12 +289,13 @@ router.post('/execute/multiple', async (req, res) => {
     try {
         const job = await get_job(req.body);
 
-        await job.prime();
+        // await job.prime();
 
-        const result = await job.execute_multiple();
+        // const result = await job.execute_multiple();
 
-        await job.cleanup();
-
+        // await job.cleanup();
+        let result = [];
+        
         return res.status(200).send(result);
     } catch (error) {
         return res.status(400).json(error);
