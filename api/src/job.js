@@ -477,8 +477,11 @@ class Job {
         this.logger.debug('Running');
         
         let run = [];
+        let all_stdin = this.stdin;
         
-        for (let stdin of this.stdin) {
+        for (let stdin of all_stdin) {
+            this.stdin = stdin;
+            
             const run_output = await this.safe_call(
                 path.join(this.runtime.pkgdir, 'run'),
                 [code_files[0].name, ...this.args],
