@@ -120,7 +120,7 @@ class Job {
                 '--nofile=' + this.runtime.max_open_files,
                 '--fsize=' + this.runtime.max_file_size,
             ];
-
+            
             const timeout_call = [
                 'timeout', '-s', '9', Math.ceil(timeout / 1000),
             ];
@@ -129,7 +129,7 @@ class Job {
                 prlimit.push('--as=' + memory_limit);
             }
 
-            const proc_call = [
+            const proc_call = [ 
                 'nice',
                 ...timeout_call,
                 ...prlimit,
@@ -229,7 +229,7 @@ class Job {
         if (this.state !== job_states.PRIMED) {
             throw new Error(
                 'Job must be in primed state, current state: ' +
-                this.state.toString()
+                    this.state.toString()
             );
         }
 
@@ -276,7 +276,7 @@ class Job {
         if (this.state !== job_states.PRIMED) {
             throw new Error(
                 'Job must be in primed state, current state: ' +
-                this.state.toString()
+                    this.state.toString()
             );
         }
 
@@ -342,17 +342,17 @@ class Job {
                     const [_, ruid, euid, suid, fuid] = uid_line.split(/\s+/);
 
                     const [_1, state, user_friendly] = state_line.split(/\s+/);
-
+                    
                     const proc_id_int = parse_int(proc_id);
-
+                    
                     // Skip over any processes that aren't ours.
-                    if (ruid != this.uid && euid != this.uid) return -1;
+                    if(ruid != this.uid && euid != this.uid) return -1; 
 
-                    if (state == 'Z') {
+                    if (state == 'Z'){
                         // Zombie process, just needs to be waited, regardless of the user id
-                        if (!to_wait.includes(proc_id_int))
+                        if(!to_wait.includes(proc_id_int))
                             to_wait.push(proc_id_int);
-
+                        
                         return -1;
                     }
                     // We should kill in all other state (Sleep, Stopped & Running)
@@ -387,7 +387,7 @@ class Job {
                 // Then clear them out of the process tree
                 try {
                     process.kill(proc, 'SIGKILL');
-                } catch (e) {
+                } catch(e) {
                     // Could already be dead and just needs to be waited on
                     this.logger.debug(
                         `Got error while SIGKILLing process ${proc}:`,
