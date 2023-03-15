@@ -22,6 +22,7 @@ WORKDIR /piston_api
 COPY ["package.json", "package-lock.json", "./"]
 RUN npm install
 COPY ./src ./src
+COPY ../packages/ ../packages
 
 RUN make -C ./src/nosocket/ all && make -C ./src/nosocket/ install
 
